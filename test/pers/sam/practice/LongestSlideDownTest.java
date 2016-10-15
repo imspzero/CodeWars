@@ -8,7 +8,8 @@ public class LongestSlideDownTest {
 
 	@Test
     public void test() {
-        int[][] test = new int[][]{{75},
+        int[][] test = new int[][]{
+        		{75},
                 {95, 64},
                 {17, 47, 82},
                 {18, 35, 87, 10},

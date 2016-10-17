@@ -80,7 +80,6 @@ public class SecretDetective {
 				}
 				testStr.setCharAt(k, x);
 				testStr.setCharAt(i, y);
-
 			}
 		}
 

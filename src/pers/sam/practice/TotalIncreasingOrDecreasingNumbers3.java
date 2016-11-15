@@ -2,36 +2,34 @@ package pers.sam.practice;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.Queue;
 
 /**
  * https://www.codewars.com/kata/55b195a69a6cc409ba000053/train/java
- * brute force...
- * this method is not a good one
+ * 
  * @author Sam Lee
  * @version 2016年11月5日下午6:21:02
  */
-public class TotalIncreasingOrDecreasingNumbers {
+public class TotalIncreasingOrDecreasingNumbers3 {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		System.out.println("totalIncDec(0) : "+totalIncDec(0));
-		System.out.println("totalIncDec(1) : "+totalIncDec(1));
-		System.out.println("totalIncDec(2) : "+totalIncDec(2));
-		System.out.println("totalIncDec(3) : "+totalIncDec(3));
-		System.out.println("totalIncDec(4) : "+totalIncDec(4));
-		System.out.println("totalIncDec(5) : "+totalIncDec(5));
-		System.out.println("totalIncDec(6) : "+totalIncDec(6));
-//		System.out.println("totalIncDec(10) : "+totalIncDec(100));
+//		System.out.println("totalIncDec(0) : "+totalIncDec(0));
+//		System.out.println("totalIncDec(1) : "+totalIncDec(1));
+//		System.out.println("totalIncDec(2) : "+totalIncDec(2));
+//		System.out.println("totalIncDec(3) : "+totalIncDec(3));
+//		System.out.println("totalIncDec(4) : "+totalIncDec(4));
+//		System.out.println("totalIncDec(5) : "+totalIncDec(5));
+//		System.out.println("totalIncDec(6) : "+totalIncDec(6));
+		System.out.println("totalIncDec(100) : "+totalIncDec(100));
 			
 //		System.out.println("totalIncDec(115) : "+totalIncDec(115));
 		
 //		bruteForceTester(100,1000);
-		
 		
 //		System.out.println(isIncDecNumber(1,"100"));
 //		System.out.println(isIncDecNumber(4,"2345"));
@@ -51,12 +49,10 @@ public class TotalIncreasingOrDecreasingNumbers {
 	 */
 	public static BigInteger totalIncDec(int n) {
 		
-//		System.out.println(Math.pow(10, n));
+		BigInteger bi = new BigInteger("0");
+		int resultCount = 0;
 		
-		Map<Integer,List> digitsNumberMap = new HashMap<>();
-		
-//		int digits = String.valueOf(n).length();
-//		System.out.println(digits);
+		Queue<String> queue = new LinkedList<>();
 		
 		if(n==0){
 			return new BigInteger("1");
@@ -67,81 +63,97 @@ public class TotalIncreasingOrDecreasingNumbers {
 		// 0 digits
 		List<String> zeroDigits = new ArrayList<>();
 		zeroDigits.add(0+"");
-		digitsNumberMap.put(0, zeroDigits);
 		
 		//1 digits
 		List<String> oneDigits = new ArrayList<>();
 		for(int k=0;k<10;k++){
 			oneDigits.add("0"+k);
 			}
-		digitsNumberMap.put(1, oneDigits);
 		
 		//2 digits
 		List<String> twoDigits  = new ArrayList<>();
 		for(int k=10;k<100;k++){
 			twoDigits.add(k+"");
 		}
-		digitsNumberMap.put(2, twoDigits);
+		
+		queue.addAll(oneDigits);
+		queue.addAll(twoDigits);
+		
+		resultCount = resultCount +oneDigits.size()
+			+twoDigits.size();
 		
 		//>=3 digits
 		for(int i = 3;i<=n;i++){
-			// i digits,  for example i=1,num<10
 			
-			List<String> lastDigits = digitsNumberMap.get(i-1);
-			List<String> currentDigits = new ArrayList<>();
-			for(int j=0;j<lastDigits.size();j++){
-				String smallNum = lastDigits.get(j);
+			while(queue.peek().length()==i-1){
+				String currentNum = queue.poll();
 				
-				addDigits(currentDigits, smallNum);
+				Integer firstDigit = Integer.valueOf(currentNum.substring(0, 1));
+				Integer lastDigit = Integer
+						.valueOf(currentNum.substring(currentNum.length() -1, currentNum.length()));
+				
+				if (firstDigit > lastDigit) {
+					for (int k = firstDigit; k <= 9; k++) {
+						queue.add(k + currentNum);
+						resultCount++;
+					}
+
+				} else if (firstDigit < lastDigit) {
+					for (int k = 1; k <=firstDigit; k++) {
+						queue.add(k + currentNum);
+						resultCount++;
+					}
+				}else if(firstDigit==lastDigit){
+					for (int k = 1; k <=9; k++) {
+						queue.add(k + currentNum);
+						resultCount++;
+					}
+				}
 			}
-			for(int k = 1;k<=9;k++){
-				String num0 =padding0(k,i);
-				currentDigits.add(num0);
-			}
-			
-//			System.out.println(i+" "+currentDigits.size());
-			digitsNumberMap.put(i, currentDigits);
+			queue.add(padding0(0,i-1));
+		}
+		
+		return new BigInteger(String.valueOf(resultCount));
+	}
+	
+	
+	public static int getBiggerIncDecNum(String currentNum,int length){
+		
+		if(currentNum.length()==length){
+			return 0;
 		}
 		
 		int resultCount = 0;
 		
-		for(Iterator<Integer> it = digitsNumberMap.keySet().iterator();it.hasNext();){
-			Integer digit = it.next();
-			List<String> currentDigits = digitsNumberMap.get(digit);
-			if(digit ==0){
-				continue;
+		Integer firstDigit = Integer.valueOf(currentNum.substring(0, 1));
+		Integer lastDigit = Integer
+				.valueOf(currentNum.substring(currentNum.length() -1, currentNum.length()));
+		
+		if (firstDigit > lastDigit) {
+			for (int k = firstDigit; k <= 9; k++) {
+				resultCount++;
 			}
-			
-//			bi.add(new BigInteger(""+currentDigits.size()));
-			resultCount = resultCount + currentDigits.size();
-//			System.out.println("digits = "+digit+" "+currentDigits.size());
+
+		} else if (firstDigit < lastDigit) {
+			for (int k = 1; k <=firstDigit; k++) {
+				resultCount++;
+			}
+		}else if(firstDigit==lastDigit){
+			for (int k = 1; k <=9; k++) {
+				resultCount=resultCount+getBiggerIncDecNum(k+currentNum,length);
+			}
 		}
 		
-//		System.out.println("-----");
-//		List<String> tempDigits = digitsNumberMap.get(3);
-//		List<Integer> intList = new ArrayList<>();
-// 		for(int i = 0;i<tempDigits.size();i++){
-//			intList.add(Integer.valueOf(tempDigits.get(i)));
-//		}
-// 		Collections.sort(intList);
-// 		for(int i = 0;i<intList.size();i++){
-//			System.out.println(intList.get(i));
-//		}
- 		
- 		
-//		for(Iterator<Integer> it = digitsNumberMap.keySet().iterator();it.hasNext();){
-//			Integer digit = (Integer) it.next();
-//			List<String> currentDigits = digitsNumberMap.get(digit);
-//			System.out.print("Digit "+digit+" :");
-//			for(String d:currentDigits){
-//				System.out.print(d+" ");
-//			}
-//			System.out.println();
-//		}
+		return resultCount;
 		
-		return new BigInteger(String.valueOf(resultCount));
 	}
-
+	
+	
+	/**
+	 * N-1 digits to N digits Numbers
+	 * @param currentDigits
+	 * @param smallNum
+	 */
 	private static void addDigits(List<String> currentDigits, String smallNum) {
 		Integer firstDigit = Integer.valueOf(smallNum.substring(0, 1));
 		Integer lastDigit = Integer
@@ -163,6 +175,12 @@ public class TotalIncreasingOrDecreasingNumbers {
 		}
 	}
 	
+	/**
+	 * multiply ten N times
+	 * @param k
+	 * @param n
+	 * @return
+	 */
 	public static String padding0(int k,int n){
 		StringBuffer sb = new StringBuffer();
 		sb.append(k);
@@ -172,21 +190,6 @@ public class TotalIncreasingOrDecreasingNumbers {
 		}
 		
 		return sb.toString();
-	}
-	
-	public static boolean isIncDecNumber(int leftDigit, String smallNumber) {
-//		System.out.println(smallNumber);
-		if (leftDigit >= Integer.valueOf(smallNumber.substring(0, 1))
-				&& Integer.valueOf(smallNumber.substring(0, 1)) >= Integer
-						.valueOf(smallNumber.substring(smallNumber.length() -1, smallNumber.length()))) {
-			return true;
-		} else if (leftDigit <= Integer.valueOf(smallNumber.substring(0, 1))
-				&& Integer.valueOf(smallNumber.substring(0, 1)) <= Integer
-				.valueOf(smallNumber.substring(smallNumber.length() - 1, smallNumber.length()))) {
-			return true;
-		}
-
-		return false;
 	}
 
 	/**

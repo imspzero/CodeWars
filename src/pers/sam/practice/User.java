@@ -9,6 +9,7 @@ public class User {
 	
 	public int progress;
 	
+	
 	User(){
 		this.rank = -8;
 		this.progress = 0;

@@ -247,4 +247,5 @@ public class TotalIncreasingOrDecreasingNumbers3 {
 		return false;
 	}
 	
+	// 2017-9-8
 }
